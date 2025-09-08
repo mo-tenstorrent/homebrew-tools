@@ -30,31 +30,20 @@ class Tracy < Formula
     depends_on "glfw"
   end
 
-  on_linux do
-    depends_on "wayland-protocols" => :build
-    depends_on "dbus"
-    depends_on "libxkbcommon"
-    depends_on "mesa"
-    depends_on "tbb"
-    depends_on "wayland"
-  end
-
   def install
-    args = %w[CAPSTONE GLFW FREETYPE].map { |arg| "-DDOWNLOAD_#{arg}=OFF" }
+    #buildpath.each_child do |child|
+      #next unless child.directory?
+      #next unless (child/"CMakeLists.txt").exist?
+      #next if %w[python test].include?(child.basename.to_s)
 
-    buildpath.each_child do |child|
-      next unless child.directory?
-      next unless (child/"CMakeLists.txt").exist?
-      next if %w[python test].include?(child.basename.to_s)
+      #system "cmake", "-S", child, "-B", child/"build", "-DCMAKE_BUILD_TYPE=Release"
+      #system "cmake", "--build", child/"build", "--config Release --parallel"
+      #bin.install child.glob("build/tracy-*").select(&:executable?)
+    #end
 
-      system "cmake", "-S", child, "-B", child/"build", *args, *std_cmake_args
-      system "cmake", "--build", child/"build"
-      bin.install child.glob("build/tracy-*").select(&:executable?)
-    end
-
-    system "cmake", "-S", ".", "-B", "build", "-DBUILD_SHARED_LIBS=ON", *std_cmake_args
-    system "cmake", "--build", "build"
-    system "cmake", "--install", "build"
+    system "cmake", "-S", "profiler", "-B", "profiler/build", "-DCMAKE_BUILD_TYPE=Release"
+    system "cmake", "--build", "profiler/build", "--config Release --parallel"
+    bin.install "profiler/build/tracy-profiler"
     bin.install_symlink "tracy-profiler" => "tracy"
   end
 
@@ -69,3 +58,4 @@ class Tracy < Formula
     Process.wait(pid)
   end
 end
+
