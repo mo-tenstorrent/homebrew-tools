@@ -31,16 +31,6 @@ class Tracy < Formula
   end
 
   def install
-    #buildpath.each_child do |child|
-      #next unless child.directory?
-      #next unless (child/"CMakeLists.txt").exist?
-      #next if %w[python test].include?(child.basename.to_s)
-
-      #system "cmake", "-S", child, "-B", child/"build", "-DCMAKE_BUILD_TYPE=Release"
-      #system "cmake", "--build", child/"build", "--config Release --parallel"
-      #bin.install child.glob("build/tracy-*").select(&:executable?)
-    #end
-
     system "cmake", "-S", "profiler", "-B", "profiler/build", "-DCMAKE_BUILD_TYPE=Release"
     system "cmake", "--build", "profiler/build", "--config Release --parallel"
     bin.install "profiler/build/tracy-profiler"
@@ -58,4 +48,3 @@ class Tracy < Formula
     Process.wait(pid)
   end
 end
-
