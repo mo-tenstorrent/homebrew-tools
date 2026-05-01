@@ -14,7 +14,7 @@ Source: **[tenstorrent/tracy](https://github.com/tenstorrent/tracy)** (Tenstorre
 
 ### Stable (default)
 
-`brew install tracy` builds from a **pinned release tag** tarball with a verified **`sha256`**.
+`brew install tracy` builds from a **pinned release tag** tarball with a verified **`sha256`** (currently **`v0.13.3-tt.0-test`**, CMake profiler GUI).
 
 After we publish a new git tag on `tenstorrent/tracy`, bump the formula from this repo:
 
@@ -47,3 +47,22 @@ head "https://github.com/tenstorrent/tracy.git", revision: "FULL_SHA"
 ```
 
 Then `brew install --HEAD mo-tenstorrent/tools/tracy` (or reinstall). Alternatively use **`bump_tracy_formula.py --commit`** to move the **stable** tarball to that SHA instead.
+
+## Tracy experimental (`Formula/tracy-experimental.rb`)
+
+Git-only **CMake `profiler/`** build. Conflicts with **`tracy`** (both install `tracy`).
+
+Without env vars the formula uses **`master`**, which may **not** include **`profiler/CMakeLists.txt`** on this fork.
+
+**Important:** Homebrew **drops** most variables before formula code runs. Use **`HOMEBREW_TRACY_EXPERIMENTAL_BRANCH`** (see [Formula Cookbook – env vars](https://docs.brew.sh/Formula-Cookbook#using-environment-variables)). Plain **`TRACY_EXPERIMENTAL_BRANCH` is usually stripped**, which looks like “I set it but brew still used master”.
+
+```bash
+HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=mo/9691_tracy_gui_new brew install mo-tenstorrent/tools/tracy-experimental
+HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=mo/9691_tracy_gui_new brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+```
+
+Implementation: **`install` deletes the staged clone and downloads `archive/refs/heads/<branch>.tar.gz`** (slashes → `%2F`).
+
+Stale cache: **`brew fetch --force tracy-experimental`**, then reinstall **with** the env var prefix again.
+
+If you see **`Warning: No remote 'origin' in .../homebrew-tracy`**, remove or repair that tap: **`brew untap mmemarian/homebrew-tracy`** (or `git remote add origin …` in that tap directory).
