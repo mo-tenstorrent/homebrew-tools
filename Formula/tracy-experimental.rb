@@ -42,8 +42,8 @@ class TracyExperimental < Formula
     unless File.exist?("profiler/CMakeLists.txt")
       odie <<~EOS
         profiler/CMakeLists.txt not found after fetching refs/heads/#{branch}.
-        Homebrew strips most env vars before formulas run — use HOMEBREW_TRACY_EXPERIMENTAL_BRANCH (not TRACY_EXPERIMENTAL_BRANCH). Example:
-          HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=mo/9691_tracy_gui_new brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+        Homebrew strips most env vars before formulas run — use HOMEBREW_TRACY_BRANCH or HOMEBREW_TRACY_EXPERIMENTAL_BRANCH. Example:
+          HOMEBREW_TRACY_BRANCH=mo/9691_tracy_gui_new brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
         Without it, this formula defaults to branch "master", which may not include the CMake profiler on this fork.
       EOS
     end
@@ -116,7 +116,11 @@ class TracyExperimental < Formula
   def experimental_branch
     # Homebrew filters env before install; vars must be HOMEBREW_* to survive.
     # See: https://docs.brew.sh/Formula-Cookbook#using-environment-variables
-    %w[HOMEBREW_TRACY_EXPERIMENTAL_BRANCH TRACY_EXPERIMENTAL_BRANCH].each do |key|
+    %w[
+      HOMEBREW_TRACY_BRANCH
+      HOMEBREW_TRACY_EXPERIMENTAL_BRANCH
+      TRACY_EXPERIMENTAL_BRANCH
+    ].each do |key|
       v = ENV[key].to_s.strip
       return v unless v.empty?
     end
@@ -126,10 +130,10 @@ class TracyExperimental < Formula
 
   def caveats
     <<~EOS
-      Pick the Git branch with HOMEBREW_TRACY_EXPERIMENTAL_BRANCH (passed through by brew).
-      TRACY_EXPERIMENTAL_BRANCH is usually stripped and ignored.
+      Pick the Git branch with HOMEBREW_TRACY_BRANCH or HOMEBREW_TRACY_EXPERIMENTAL_BRANCH (same line as brew).
+      Plain TRACY_* env vars are usually stripped.
 
-        HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=your/branch brew install mo-tenstorrent/tools/tracy-experimental
+        HOMEBREW_TRACY_BRANCH=your/branch brew install mo-tenstorrent/tools/tracy-experimental --build-from-source
 
       If brew reports "installed but not linked", unlink the stable formula if needed, then:
 
