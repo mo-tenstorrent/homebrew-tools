@@ -4,8 +4,8 @@ class Tracy < Formula
 
   # Stable: pinned GitHub archive + checksum (bump via scripts/bump_tracy_formula.py).
   stable do
-    url "https://github.com/tenstorrent/tracy/archive/refs/tags/v0.10-tt.0.tar.gz"
-    sha256 "9a80bf77190bd66852375ef677751cdbb3e27be2aa1b25c928ea2e7c5b8ae62a"
+    url "https://github.com/tenstorrent/tracy/archive/refs/tags/v0.13.3-tt.0-test.tar.gz"
+    sha256 "d19e9a4c9a1ac7d4fb76534ccb2a36ae8bd771a23092e81a72ffd02e2f769a25"
   end
 
   # Power users — branch tip (no tarball checksum):
@@ -17,6 +17,7 @@ class Tracy < Formula
 
   license "BSD-3-Clause"
 
+  depends_on "cmake" => :build
   depends_on "pkgconf" => :build
   depends_on "capstone"
   depends_on "freetype"
@@ -28,31 +29,17 @@ class Tracy < Formula
     depends_on "libxkbcommon"
   end
 
-  fails_with gcc: "5" # C++17
-
   def install
-    %w[capture csvexport import-chrome update].each do |f|
-      system "make", "-C", "#{f}/build/unix", "release"
-      bin.install "#{f}/build/unix/#{f}-release" => "tracy-#{f}"
-    end
-
-    system "make", "-C", "profiler/build/unix", "release"
-    bin.install "profiler/build/unix/Tracy-release" => "tracy"
-
-    system "make", "-C", "library/unix", "release"
-    if File.exist?("library/unix/libtracy-release.dylib")
-      lib.install "library/unix/libtracy-release.dylib" => "libtracy.dylib"
-    else
-      lib.install "library/unix/libtracy-release.so" => "libtracy.so"
-    end
-
-    %w[client common tracy].each do |f|
-      (include/"Tracy/#{f}").install Dir["public/#{f}/*.{h,hpp}"]
-    end
+    system "cmake", "-S", "profiler", "-B", "profiler/build",
+                   "-DCMAKE_BUILD_TYPE=Release",
+                   "-DCMAKE_INSTALL_RPATH=#{rpath}"
+    system "cmake", "--build", "profiler/build", "--parallel"
+    bin.install "profiler/build/tracy-profiler"
+    bin.install_symlink "tracy-profiler" => "tracy"
   end
 
   test do
-    assert_match "Tracy Profiler #{version}", shell_output("#{bin}/tracy --help")
+    assert_match(/Tracy Profiler 0\.13\.3/, shell_output("#{bin}/tracy --help"))
 
     port = free_port
     pid = fork do
