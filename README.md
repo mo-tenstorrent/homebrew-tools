@@ -57,8 +57,8 @@ Without env vars the formula uses **`master`**, which may **not** include **`pro
 **Important:** Homebrew **drops** most variables before formula code runs. Use **`HOMEBREW_TRACY_BRANCH`** or **`HOMEBREW_TRACY_EXPERIMENTAL_BRANCH`** (see [Formula Cookbook – env vars](https://docs.brew.sh/Formula-Cookbook#using-environment-variables)). Plain **`TRACY_*` vars are usually stripped**.
 
 ```bash
-HOMEBREW_TRACY_BRANCH=mo/9691_tracy_gui_new brew install mo-tenstorrent/tools/tracy-experimental --build-from-source
-HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=mo/9691_tracy_gui_new brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+HOMEBREW_TRACY_BRANCH=your/feature-branch brew install mo-tenstorrent/tools/tracy-experimental --build-from-source
+HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=your/feature-branch brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
 ```
 
 Implementation: **`install` deletes the staged clone and downloads `archive/refs/heads/<branch>.tar.gz`** (slashes → `%2F`).

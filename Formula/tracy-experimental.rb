@@ -43,7 +43,7 @@ class TracyExperimental < Formula
       odie <<~EOS
         profiler/CMakeLists.txt not found after fetching refs/heads/#{branch}.
         Homebrew strips most env vars before formulas run — use HOMEBREW_TRACY_BRANCH or HOMEBREW_TRACY_EXPERIMENTAL_BRANCH. Example:
-          HOMEBREW_TRACY_BRANCH=mo/9691_tracy_gui_new brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+          HOMEBREW_TRACY_BRANCH=your/feature-branch brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
         Without it, this formula defaults to branch "master", which may not include the CMake profiler on this fork.
       EOS
     end
