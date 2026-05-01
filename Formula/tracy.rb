@@ -9,7 +9,7 @@ class Tracy < Formula
   end
 
   # Power users — branch tip (no tarball checksum):
-  #   brew install mo-tenstorrent/tools/tracy --HEAD
+  #   brew install YOUR_USER/tools/tracy --HEAD
   #
   # Pin a single commit (edit locally or PR): set revision on head, e.g.
   #   head "https://github.com/tenstorrent/tracy.git", revision: "FULL_SHA_HERE"

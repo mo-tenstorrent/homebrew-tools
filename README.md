@@ -1,9 +1,9 @@
 # homebrew-tools
 
-Personal Homebrew tap: **`mo-tenstorrent/tools`**.
+Homebrew tap for Tracy-related formulae (clone under your GitHub user; tap short name is `YOUR_USER/tools` per Homebrew conventions).
 
 ```bash
-brew tap mo-tenstorrent/tools
+brew tap YOUR_USER/tools
 brew install tracy
 brew upgrade tracy
 ```
@@ -36,8 +36,8 @@ To pin stable to a **specific commit** (same checksum model as a tag):
 **Branch tip** (no tarball checksum; builds from git):
 
 ```bash
-brew install mo-tenstorrent/tools/tracy --HEAD
-brew reinstall mo-tenstorrent/tools/tracy --HEAD
+brew install YOUR_USER/tools/tracy --HEAD
+brew reinstall YOUR_USER/tools/tracy --HEAD
 ```
 
 **Exact commit** via git (edit `Formula/tracy.rb`): replace the `head` stanza with:
@@ -46,7 +46,7 @@ brew reinstall mo-tenstorrent/tools/tracy --HEAD
 head "https://github.com/tenstorrent/tracy.git", revision: "FULL_SHA"
 ```
 
-Then `brew install --HEAD mo-tenstorrent/tools/tracy` (or reinstall). Alternatively use **`bump_tracy_formula.py --commit`** to move the **stable** tarball to that SHA instead.
+Then `brew install --HEAD YOUR_USER/tools/tracy` (or reinstall). Alternatively use **`bump_tracy_formula.py --commit`** to move the **stable** tarball to that SHA instead.
 
 ## Tracy experimental (`Formula/tracy-experimental.rb`)
 
@@ -54,15 +54,14 @@ Git-only **CMake `profiler/`** build. Conflicts with **`tracy`** (both install `
 
 Without env vars the formula uses **`master`**, which may **not** include **`profiler/CMakeLists.txt`** on this fork.
 
-**Important:** Homebrew **drops** most variables before formula code runs. Use **`HOMEBREW_TRACY_BRANCH`** or **`HOMEBREW_TRACY_EXPERIMENTAL_BRANCH`** (see [Formula Cookbook – env vars](https://docs.brew.sh/Formula-Cookbook#using-environment-variables)). Plain **`TRACY_*` vars are usually stripped**.
+**Important:** Homebrew **drops** most variables before formula code runs. Use **`HOMEBREW_TRACY_BRANCH`** on the **same line** as `brew` (see [Formula Cookbook – env vars](https://docs.brew.sh/Formula-Cookbook#using-environment-variables)).
 
 ```bash
-HOMEBREW_TRACY_BRANCH=your/feature-branch brew install mo-tenstorrent/tools/tracy-experimental --build-from-source
-HOMEBREW_TRACY_EXPERIMENTAL_BRANCH=your/feature-branch brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+HOMEBREW_TRACY_BRANCH=your/feature-branch brew install YOUR_USER/tools/tracy-experimental --build-from-source
 ```
 
 Implementation: **`install` deletes the staged clone and downloads `archive/refs/heads/<branch>.tar.gz`** (slashes → `%2F`).
 
 Stale cache: **`brew fetch --force tracy-experimental`**, then reinstall **with** the env var prefix again.
 
-If you see **`Warning: No remote 'origin' in .../homebrew-tracy`**, remove or repair that tap: **`brew untap mmemarian/homebrew-tracy`** (or `git remote add origin …` in that tap directory).
+If you see **`Warning: No remote 'origin' in .../some-tap`**, remove or repair that tap (`brew untap …` or fix `git remote` in that tap directory).

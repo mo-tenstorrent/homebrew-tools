@@ -2,13 +2,13 @@ class TracyExperimental < Formula
   desc "Tracy profiler GUI from tenstorrent/tracy (arbitrary branch via env)"
   homepage "https://github.com/wolfpld/tracy"
 
-  TRACY_EXPERIMENTAL_REPO = "https://github.com/tenstorrent/tracy.git".freeze
+  TRACY_REPO = "https://github.com/tenstorrent/tracy.git".freeze
 
   # HEAD-only: Homebrew clones master for the revision stamp; install() replaces the tree with the tarball.
   # Use `head` (not `url` + `version "HEAD"`) so pkg_version stays aligned with `formula.prefix`
   # after `update_head_version` — otherwise bin.install can land in a different Cellar than the
   # empty_installation? check (metafiles-only top-level → bogus "Empty installation").
-  head TRACY_EXPERIMENTAL_REPO, branch: "master"
+  head TRACY_REPO, branch: "master"
 
   license "BSD-3-Clause"
 
@@ -27,7 +27,7 @@ class TracyExperimental < Formula
   end
 
   def install
-    branch = experimental_branch
+    branch = tracy_branch_from_env
     encoded = branch.gsub("/", "%2F")
     tarball_url = "https://github.com/tenstorrent/tracy/archive/refs/heads/#{encoded}.tar.gz"
 
@@ -42,8 +42,8 @@ class TracyExperimental < Formula
     unless File.exist?("profiler/CMakeLists.txt")
       odie <<~EOS
         profiler/CMakeLists.txt not found after fetching refs/heads/#{branch}.
-        Homebrew strips most env vars before formulas run — use HOMEBREW_TRACY_BRANCH or HOMEBREW_TRACY_EXPERIMENTAL_BRANCH. Example:
-          HOMEBREW_TRACY_BRANCH=your/feature-branch brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+        Homebrew strips most env vars before formulas run — use HOMEBREW_TRACY_BRANCH (same line as brew). Example:
+          HOMEBREW_TRACY_BRANCH=your/feature-branch brew reinstall #{full_name} --build-from-source
         Without it, this formula defaults to branch "master", which may not include the CMake profiler on this fork.
       EOS
     end
@@ -63,8 +63,7 @@ class TracyExperimental < Formula
                    "-DCMAKE_INSTALL_RPATH=#{rpath}"
     system "cmake", "--build", "profiler/build", "--parallel"
 
-    # If your brew log still shows `cmake --install` after this line, the tap is
-    # stale — run: git -C "$(brew --repo mo-tenstorrent/tools)" pull
+    # If your brew log still shows `cmake --install` after this line, the formula is stale — run `brew update`.
     ohai "Copying tracy-profiler from profiler/build into prefix (no cmake --install)"
 
     exe_rel = tracy_profiler_executable_relative_path
@@ -113,37 +112,27 @@ class TracyExperimental < Formula
     "(could not list profiler/build)"
   end
 
-  def experimental_branch
-    # Homebrew filters env before install; vars must be HOMEBREW_* to survive.
-    # See: https://docs.brew.sh/Formula-Cookbook#using-environment-variables
-    %w[
-      HOMEBREW_TRACY_BRANCH
-      HOMEBREW_TRACY_EXPERIMENTAL_BRANCH
-      TRACY_EXPERIMENTAL_BRANCH
-    ].each do |key|
-      v = ENV[key].to_s.strip
-      return v unless v.empty?
-    end
+  def tracy_branch_from_env
+    # Homebrew filters env before install; use HOMEBREW_* names (see Formula Cookbook).
+    v = ENV.fetch("HOMEBREW_TRACY_BRANCH", "").to_s.strip
+    return v unless v.empty?
 
     "master"
   end
 
   def caveats
     <<~EOS
-      Pick the Git branch with HOMEBREW_TRACY_BRANCH or HOMEBREW_TRACY_EXPERIMENTAL_BRANCH (same line as brew).
-      Plain TRACY_* env vars are usually stripped.
+      Pick the Git branch with HOMEBREW_TRACY_BRANCH (same line as brew).
 
-        HOMEBREW_TRACY_BRANCH=your/branch brew install mo-tenstorrent/tools/tracy-experimental --build-from-source
+        HOMEBREW_TRACY_BRANCH=your/branch brew install #{full_name} --build-from-source
 
       If brew reports "installed but not linked", unlink the stable formula if needed, then:
 
-        brew unlink tracy 2>/dev/null; brew link tracy-experimental --overwrite
+        brew unlink tracy 2>/dev/null; brew link #{name} --overwrite
 
-      If you still see Empty installation after `Copying tracy-profiler…`, refresh the tap and reinstall.
-      Old formulas used `version "HEAD"` / cmake --install in ways that confuse Cellar layout.
+      If install fails after `Copying tracy-profiler…`, run `brew update` and reinstall:
 
-        git -C "$(brew --repo mo-tenstorrent/tools)" pull --ff-only && brew update
-        brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
+        brew reinstall #{full_name} --build-from-source
     EOS
   end
 
