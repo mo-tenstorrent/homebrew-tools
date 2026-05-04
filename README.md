@@ -2,8 +2,6 @@
 
 Homebrew tap with Tracy formulae from **[tenstorrent/tracy](https://github.com/tenstorrent/tracy)**.
 
-Replace **`YOUR_USER`** with the GitHub user or org that owns this tap (short name `YOUR_USER/tools` → repo **`homebrew-tools`** on GitHub).
-
 ---
 
 ## 1. Stable Tracy (pinned release tag)
@@ -13,18 +11,18 @@ Latest **stable** build comes from `Formula/tracy.rb` (fixed version + checksum)
 ### Install from scratch
 
 ```bash
-brew tap YOUR_USER/tools
+brew tap mo-tenstorrent/tools
 brew update
 brew uninstall tracy-experimental 2>/dev/null || true
 brew uninstall tracy 2>/dev/null || true
-brew install YOUR_USER/tools/tracy
+brew install mo-tenstorrent/tools/tracy
 ```
 
 ### Upgrade to the latest stable
 
 ```bash
 brew update
-brew upgrade YOUR_USER/tools/tracy
+brew upgrade mo-tenstorrent/tools/tracy
 ```
 
 ---
@@ -44,8 +42,8 @@ Set **`HOMEBREW_TRACY_BRANCH`** on the **same line** as `brew` so Homebrew keeps
 brew uninstall tracy 2>/dev/null || true
 brew uninstall tracy-experimental 2>/dev/null || true
 brew update-reset
-brew tap YOUR_USER/tools
-HOMEBREW_TRACY_BRANCH=your/feature-branch brew install YOUR_USER/tools/tracy-experimental --build-from-source
+brew tap mo-tenstorrent/tools
+HOMEBREW_TRACY_BRANCH=your/feature-branch brew install mo-tenstorrent/tools/tracy-experimental --build-from-source
 brew link tracy-experimental --overwrite
 ```
 
@@ -53,5 +51,5 @@ brew link tracy-experimental --overwrite
 
 ```bash
 brew update
-HOMEBREW_TRACY_BRANCH=your/feature-branch brew reinstall YOUR_USER/tools/tracy-experimental --build-from-source
+HOMEBREW_TRACY_BRANCH=your/feature-branch brew reinstall mo-tenstorrent/tools/tracy-experimental --build-from-source
 ```
